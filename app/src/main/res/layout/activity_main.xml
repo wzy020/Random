@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="randommusic.wzy.self.random.MainActivity">
+
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/list_layout"
+        android:dividerHeight="2dp"
+        android:layout_above="@+id/ctrl_bar"></ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#ff0000"
+        android:id="@+id/ctrl_bar"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/ctrl_pause"
+            android:layout_width="70dp"
+            android:layout_height="60dp"
+            android:text="pause"
+
+            />
+
+        <Button
+            android:id="@+id/ctrl_stop"
+            android:layout_width="70dp"
+            android:layout_height="60dp"
+            android:text="stop"
+            />
+    </LinearLayout>
+</RelativeLayout>
