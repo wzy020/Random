@@ -1,39 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="randommusic.wzy.self.random.MainActivity">
+    xmlns:Android="http://schemas.android.com/tools"
+    android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:gravity="bottom"
+        android:elevation="8dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            Android:typeface="monospace"
+            android:id="@+id/music_title"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginStart="5dp"
+            android:maxLines="1"
+            android:text="Random"
+            android:textColor="#ffffff"
+            android:textSize="28dp"
+            android:maxEms="9"
+            android:ellipsize="end"/>
+
+        <Button
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/ic_more_vert_black_24dp"
+            android:layout_alignTop="@+id/music_title"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
 
     <ListView
+        android:layout_weight="1"
+        android:id="@+id/music_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/list_layout"
-        android:dividerHeight="2dp"
-        android:layout_above="@+id/ctrl_bar"></ListView>
+        />
 
     <LinearLayout
+        android:id="@+id/control_panel"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="#ff0000"
-        android:id="@+id/ctrl_bar"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:background="@color/colorPrimary">
 
-        <Button
-            android:id="@+id/ctrl_pause"
-            android:layout_width="70dp"
-            android:layout_height="60dp"
-            android:text="pause"
+            <SeekBar
+                android:id="@+id/seek_music"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginTop="4dp"
+                />
 
-            />
 
-        <Button
-            android:id="@+id/ctrl_stop"
-            android:layout_width="70dp"
-            android:layout_height="60dp"
-            android:text="stop"
-            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:elevation="8dp">
+
+            <TextView
+                android:id="@+id/played_time"
+                android:text="00:00"
+                android:textColor="#FFF"
+                android:gravity="center"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_alignTop="@+id/duration_time"
+                android:layout_alignParentStart="true" />
+
+            <Button
+                android:id="@+id/play_btn"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:text=""
+                android:background="@drawable/ic_play"
+                android:onClick="onClick"
+                android:layout_alignTop="@+id/next_btn"
+                android:layout_toEndOf="@+id/played_time"
+                android:layout_marginStart="55dp"
+                android:elevation="15dp"/>
+
+            <Button
+                android:id="@+id/next_btn"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="50dp"
+                android:text=""
+                android:background="@drawable/ic_next"
+                android:onClick="onClick"
+                android:layout_marginEnd="55dp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/duration_time"
+                android:elevation="15dp"/>
+            <TextView
+                android:id="@+id/duration_time"
+                android:text="--:--"
+                android:textColor="#FFF"
+                android:gravity="center"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="5dp" />
+
+        </RelativeLayout>
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

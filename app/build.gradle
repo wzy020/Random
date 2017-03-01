@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "randommusic.wzy.self.random"
+        applicationId "wzy.self.random"
         minSdkVersion 21
         targetSdkVersion 24
         versionCode 1
