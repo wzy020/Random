@@ -75,7 +75,7 @@
             <TextView
                 android:id="@+id/played_time"
                 android:text="00:00"
-                android:textColor="#FFF"
+                android:textColor="@color/colorAccent"
                 android:gravity="center"
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
@@ -109,8 +109,8 @@
                 android:elevation="15dp"/>
             <TextView
                 android:id="@+id/duration_time"
-                android:text="--:--"
-                android:textColor="#FFF"
+                android:text="00:00"
+                android:textColor="@color/colorAccent"
                 android:gravity="center"
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"

@@ -1,21 +1,14 @@
 package self.wzy.random;
 
 import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,7 +17,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -39,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mPlayedTime;
     private TextView mDurationTime;
     private SeekBar mMusicSeekBar;
-    private MusicUpdateTask mMusicUpdateTask;
     private MusicService.MusicServiceIBinder mMusicServiceBinder;
+    private MusicItemAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initService(){
-        mMusicUpdateTask = new MusicUpdateTask();
-        mMusicUpdateTask.execute();
         Intent i = new Intent(this, MusicService.class);
         startService(i);
         bindService(i, mServiceConnection, BIND_AUTO_CREATE);
@@ -69,29 +59,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if(mMusicUpdateTask != null && mMusicUpdateTask.getStatus() == AsyncTask.Status.RUNNING) {
-            mMusicUpdateTask.cancel(true);
-        }
-        mMusicUpdateTask = null;
         mMusicServiceBinder.unregisterOnStateChangeListener(mStateChangeListenr);
         unbindService(mServiceConnection);
+    }
 
-        for(MusicItem item : mMusicList) {
-            if( item.thumb != null ) {
-                item.thumb.recycle();
-                item.thumb = null;
-            }
-        }
-        mMusicList.clear();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMusicList = MusicService.mMusicList;
+        adapter = new MusicItemAdapter(getApplicationContext(), R.layout.music_item, mMusicList);
+        mMusicListView.setAdapter(adapter);
     }
 
     private void initViews(){
-        mMusicList = new ArrayList<MusicItem>();
+        mMusicList = MusicService.mMusicList;
         mMusicListView = (ListView) findViewById(R.id.music_list);
-        MusicItemAdapter adapter = new MusicItemAdapter(this, R.layout.music_item, mMusicList);
-        mMusicListView.setAdapter(adapter);
-
         mMusicListView.setOnItemClickListener(mOnMusicItemClickListener);
 
         mPlayBtn = (Button) findViewById(R.id.play_btn);
@@ -164,74 +146,6 @@ public class MainActivity extends AppCompatActivity {
         mMusicTitle.setText(item.name);
     }
 
-
-
-    private class MusicUpdateTask extends AsyncTask<Object, MusicItem, Void> {
-
-        List<MusicItem> mDataList = new ArrayList<MusicItem>();
-
-        @Override
-        protected Void doInBackground(Object... params) {
-
-            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            String[] searchKey = new String[] {
-                    MediaStore.Audio.Media._ID,
-                    MediaStore.Audio.Media.TITLE,
-                    MediaStore.Audio.Albums.ALBUM_ID,
-                    MediaStore.Audio.Media.DATA,
-                    MediaStore.Audio.Media.DURATION
-            };
-
-            String [] keywords = null;
-            String sortOrder = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
-
-            ContentResolver resolver = getContentResolver();
-            Cursor cursor = resolver.query(uri, searchKey, null, keywords, sortOrder);
-
-            if(cursor != null)
-            {
-                while(cursor.moveToNext() && ! isCancelled())
-                {
-                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                    String id = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-                    Uri musicUri = Uri.withAppendedPath(uri, id);
-
-                    String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-                    long duration = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-
-
-                    int albumId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ID));
-                    Uri albumUri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId);
-                    MusicItem data = new MusicItem(musicUri, albumUri, name, duration, 0);
-                    if (uri != null) {
-                        ContentResolver res = getContentResolver();
-                        data.thumb = Utils.createThumbFromUir(res, albumUri);
-                    }
-
-                    Log.d(TAG, "real music found: " + path);
-
-                    publishProgress(data);
-
-                }
-
-                cursor.close();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(MusicItem... values) {
-
-            MusicItem data = values[0];
-
-            mMusicList.add(data);
-            MusicItemAdapter adapter = (MusicItemAdapter) mMusicListView.getAdapter();
-            adapter.notifyDataSetChanged();
-
-        }
-    }
-
     private MusicService.OnStateChangeListenr mStateChangeListenr = new MusicService.OnStateChangeListenr() {
 
         @Override
@@ -255,6 +169,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPalyComplet(MusicItem item) {
             mNextBtn.callOnClick();
+        }
+
+        @Override
+        public void onUpdateInfos(MusicItem item){
+            mMusicList.add(item);
+            adapter.notifyDataSetChanged();
         }
     };
 
