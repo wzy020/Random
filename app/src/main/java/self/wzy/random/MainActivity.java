@@ -3,6 +3,7 @@ package self.wzy.random;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -11,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -100,6 +102,25 @@ public class MainActivity extends AppCompatActivity {
         mPlayedTime = (TextView) findViewById(R.id.played_time);
         mMusicSeekBar = (SeekBar) findViewById(R.id.seek_music);
         mMusicSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+
+        Button more = (Button)findViewById(R.id.more_btn);
+        more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(MainActivity.this).setTitle("EXIT?")
+                        .setPositiveButton("YES",new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mMusicServiceBinder.stop();
+                                finish();
+                            }
+                        }).setNegativeButton("NO",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).show();
+            }
+        });
     }
 
     private SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {

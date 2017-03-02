@@ -88,6 +88,9 @@ public class MusicService extends Service {
     }
 
     public class MusicServiceIBinder extends Binder {
+        public void stop() {
+            stopInner();
+        }
 
         public void PlayItem(MusicItem item) {
             PlayItemInner(item, true);
@@ -137,7 +140,9 @@ public class MusicService extends Service {
         }
     }
 
-
+    private void stopInner() {
+        stopSelf();
+    }
 
     private void playInner() {
         if(mPaused) {
