@@ -156,6 +156,8 @@ public class MainActivity extends AppCompatActivity {
             mPlayBtn.setBackgroundResource(R.drawable.ic_pause);
             updatePlayingInfo(item);
             enableControlPanel(true);
+            adapter.setSelectItem(mActivityMusicList.indexOf(item));
+            adapter.notifyDataSetInvalidated();
         }
 
         @Override
@@ -185,6 +187,10 @@ public class MainActivity extends AppCompatActivity {
 
             mActivityMusicList.clear();
             mActivityMusicList.addAll(mMusicServiceBinder.getList());
+
+            if(mMusicServiceBinder.getCurrentMusic()!=null){
+                adapter.setSelectItem(mActivityMusicList.indexOf(mMusicServiceBinder.getCurrentMusic()));
+            }
 
             MusicItem item = mMusicServiceBinder.getCurrentMusic();
             if(item == null) {

@@ -14,7 +14,7 @@
         android:background="@color/colorPrimaryLight"
         android:elevation="5dp"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -22,24 +22,42 @@
         <TextView
             android:id="@+id/music_title"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="43dp"
             android:gravity="center_vertical"
             android:layout_margin="2dp"
             style="?android:attr/textAppearanceMedium"
-            android:lines="2"
-            android:layout_weight="2"
+            android:singleLine="true"
             android:textColor="@color/colorPrimary"/>
 
         <TextView
-            android:id="@+id/music_duration"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:gravity="center_vertical"
-            android:layout_margin="2dp"
+            android:id="@+id/music_singer"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:gravity="start"
             style="?android:attr/textAppearanceSmall"
             android:singleLine="true"
-            android:layout_weight="1"/>
+            android:textColor="@color/colorPrimaryLight"
+            android:text="singer"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_below="@+id/music_title"
+            android:layout_alignStart="@+id/music_title" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/music_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:gravity="end"
+            style="?android:attr/textAppearanceSmall"
+            android:singleLine="true"
+            android:textColor="@color/colorPrimaryLight"
+            android:text="time"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="5dp"
+            android:layout_below="@+id/music_title"
+            android:layout_alignEnd="@+id/music_title" />
+
+    </RelativeLayout>
 
 </LinearLayout>

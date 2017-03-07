@@ -15,6 +15,7 @@ public class MusicItemAdapter extends BaseAdapter {
     private final LayoutInflater mInflater;
     private final int mResource;
     private Context mContext;
+    private int selectItem = -1;
 
     public MusicItemAdapter(Context context, int resId, List<MusicItem> data)
     {
@@ -50,6 +51,9 @@ public class MusicItemAdapter extends BaseAdapter {
         TextView title = (TextView) convertView.findViewById(R.id.music_title);
         title.setText(item.name);
 
+        TextView singer = (TextView) convertView.findViewById(R.id.music_singer);
+        singer.setText(item.singer);
+
         TextView createTime = (TextView) convertView.findViewById(R.id.music_duration);
 
         String times = Utils.convertMSecendToTime(item.duration);
@@ -65,7 +69,17 @@ public class MusicItemAdapter extends BaseAdapter {
             }
         }
 
+        if (position == selectItem) {
+            convertView.setBackgroundResource(R.color.colorAccent);
+        }else {
+            convertView.setBackground(null);
+        }
+
         return convertView;
+    }
+
+    public  void setSelectItem(int selectItem) {
+        this.selectItem = selectItem;
     }
 
 }

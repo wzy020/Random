@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -244,6 +243,7 @@ public class MusicService extends Service {
             String[] searchKey = new String[] {
                     MediaStore.Audio.Media._ID,
                     MediaStore.Audio.Media.TITLE,
+                    MediaStore.Audio.Media.ARTIST,
                     MediaStore.Audio.Albums.ALBUM_ID,
                     MediaStore.Audio.Media.DATA,
                     MediaStore.Audio.Media.DURATION
@@ -263,11 +263,12 @@ public class MusicService extends Service {
                     Uri musicUri = Uri.withAppendedPath(uri, id);
 
                     String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                    String singer = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                     long duration = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
 
                     int albumId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ID));
                     Uri albumUri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId);
-                    MusicItem data = new MusicItem(musicUri, albumUri, name, duration, 0);
+                    MusicItem data = new MusicItem(musicUri, albumUri, name, singer, duration, 0);
                     if (uri != null) {
                         ContentResolver res = getContentResolver();
                         data.thumb = Utils.createThumbFromUir(res, albumUri);
