@@ -13,22 +13,26 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.provider.MediaStore;
-
+import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MusicService extends Service {
 
     private List<MusicItem> mServiceMusicList;
     private MusicUpdateTask mMusicUpdateTask;
+    private List<OnStateChangeListenr> mListenerList = new ArrayList<OnStateChangeListenr>();
+    private MusicItem mCurrentMusicItem;
+    private MediaPlayer mMusicPlayer;
+    private boolean mPaused;
 
     public interface OnStateChangeListenr {
 
         void onPlayProgressChange(MusicItem item);
         void onPlay(MusicItem item);
         void onPause(MusicItem item);
-        void onPalyComplet(MusicItem item);
         void onUpdateInfos(MusicItem item);
     }
 
@@ -50,16 +54,6 @@ public class MusicService extends Service {
             }
         }
     };
-
-
-    private List<OnStateChangeListenr> mListenerList = new ArrayList<OnStateChangeListenr>();
-
-    private MusicItem mCurrentMusicItem;
-    private MediaPlayer mMusicPlayer;
-    private boolean mPaused;
-
-
-
 
     @Override
     public void onCreate() {
@@ -107,7 +101,11 @@ public class MusicService extends Service {
         }
 
         public void PlayItem(MusicItem item) {
-            PlayItemInner(item, true);
+            PlayItemInner(item);
+        }
+
+        public void next() {
+            nextInner();
         }
 
         public void play() {
@@ -151,15 +149,19 @@ public class MusicService extends Service {
         return mBinder;
     }
 
-    private void PlayItemInner(MusicItem item, boolean needPlay) {
-        if(needPlay) {
-            mCurrentMusicItem = item;
-            playInner();
-        }
+    private void PlayItemInner(MusicItem item) {
+        mCurrentMusicItem = item;
+        playInner();
     }
 
     private void stopInner() {
         stopSelf();
+    }
+
+    private void nextInner() {
+        Random random = new Random();
+        int num = random.nextInt(mServiceMusicList.size());
+        PlayItemInner(mServiceMusicList.get(num));
     }
 
     private void playInner() {
@@ -208,6 +210,7 @@ public class MusicService extends Service {
 
             if(reload) {
                 prepareToPlay(item);
+                item.playedTime=0;
             }
 
             mMusicPlayer.start();
@@ -227,9 +230,8 @@ public class MusicService extends Service {
         public void onCompletion(MediaPlayer mp) {
 
             mCurrentMusicItem.playedTime = 0;
-            for(OnStateChangeListenr l : mListenerList) {
-                l.onPalyComplet(mCurrentMusicItem);
-            }
+            nextInner();
+
         }
     };
 
@@ -286,4 +288,11 @@ public class MusicService extends Service {
             }
         }
     }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        stopSelf();
+    }
+
 }

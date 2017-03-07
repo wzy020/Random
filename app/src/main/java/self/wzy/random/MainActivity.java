@@ -19,7 +19,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -166,11 +165,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onPalyComplet(MusicItem item) {
-            mNextBtn.callOnClick();
-        }
-
-        @Override
         public void onUpdateInfos(MusicItem item){
             if(mActivityMusicList != null && !mActivityMusicList.contains(item)){
                 mActivityMusicList.add(item);
@@ -228,12 +222,11 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.next_btn: {
                 if(mMusicServiceBinder != null) {
-                    Random random = new Random();
-                    int num = random.nextInt(mActivityMusicList.size());
-                    mMusicServiceBinder.PlayItem(mActivityMusicList.get(num));
+                    mMusicServiceBinder.next();
                 }
             }
             break;
         }
     }
+
 }
