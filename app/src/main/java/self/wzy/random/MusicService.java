@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MusicService extends Service {
 
-    public static List<MusicItem> mMusicList;
+    private List<MusicItem> mServiceMusicList;
     private MusicUpdateTask mMusicUpdateTask;
 
     public interface OnStateChangeListenr {
@@ -64,7 +64,7 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mMusicList = new ArrayList<MusicItem>();
+        mServiceMusicList = new ArrayList<MusicItem>();
         mMusicUpdateTask = new MusicUpdateTask();
         mMusicUpdateTask.execute();
 
@@ -136,6 +136,10 @@ public class MusicService extends Service {
 
         public boolean isPlaying() {
             return isPlayingInner();
+        }
+
+        public List getList(){
+            return mServiceMusicList;
         }
 
     }
@@ -276,7 +280,7 @@ public class MusicService extends Service {
         @Override
         protected void onProgressUpdate(MusicItem... values) {
             MusicItem data = values[0];
-            mMusicList.add(data);
+            mServiceMusicList.add(data);
             for(OnStateChangeListenr l : mListenerList) {
                 l.onUpdateInfos(data);
             }
