@@ -4,14 +4,11 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -33,28 +30,21 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar mMusicSeekBar;
     private MusicService.MusicServiceIBinder mMusicServiceBinder;
     private MusicItemAdapter adapter;
+    private int goodPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-                    | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        }
-
+        goodPosition = getWindowManager().getDefaultDisplay().getHeight()/4;
         Intent i = new Intent(this, MusicService.class);
         startService(i);
         initViews();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         mMusicServiceBinder.unregisterOnStateChangeListener(mStateChangeListenr);
         unbindService(mServiceConnection);
     }
@@ -64,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Intent i = new Intent(this, MusicService.class);
         bindService(i, mServiceConnection, BIND_AUTO_CREATE);
-
-        adapter = new MusicItemAdapter(getApplicationContext(), R.layout.music_item, mActivityMusicList);
-        mMusicListView.setAdapter(adapter);
     }
 
     private void initViews(){
@@ -188,8 +175,14 @@ public class MainActivity extends AppCompatActivity {
             mActivityMusicList.clear();
             mActivityMusicList.addAll(mMusicServiceBinder.getList());
 
-            if(mMusicServiceBinder.getCurrentMusic()!=null){
-                adapter.setSelectItem(mActivityMusicList.indexOf(mMusicServiceBinder.getCurrentMusic()));
+            adapter = new MusicItemAdapter(getApplicationContext(), R.layout.music_item, mActivityMusicList);
+            mMusicListView.setAdapter(adapter);
+
+            MusicItem currentItem = mMusicServiceBinder.getCurrentMusic();
+            if(currentItem != null){
+                int indexOfCurrent = mActivityMusicList.indexOf(currentItem);
+                adapter.setSelectItem(indexOfCurrent);
+                mMusicListView.setSelectionFromTop(indexOfCurrent, goodPosition);
             }
 
             MusicItem item = mMusicServiceBinder.getCurrentMusic();
@@ -212,23 +205,25 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void onClick(View view) {
+        if(mMusicServiceBinder == null){
+            return;
+        }
         switch (view.getId()) {
-
             case R.id.play_btn: {
                 if(mMusicServiceBinder != null) {
-                    if(!mMusicServiceBinder.isPlaying()) {
+                    mMusicListView.setSelectionFromTop(mActivityMusicList.indexOf(mMusicServiceBinder.getCurrentMusic()), goodPosition);
+                    if (!mMusicServiceBinder.isPlaying()) {
                         mMusicServiceBinder.play();
-                    }
-                    else {
+                    } else {
                         mMusicServiceBinder.pause();
                     }
                 }
             }
             break;
-
             case R.id.next_btn: {
                 if(mMusicServiceBinder != null) {
                     mMusicServiceBinder.next();
+                    mMusicListView.setSelectionFromTop(mActivityMusicList.indexOf(mMusicServiceBinder.getCurrentMusic()), goodPosition);
                 }
             }
             break;
