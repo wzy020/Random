@@ -26,8 +26,10 @@
             android:ellipsize="end"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="13dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="5dp"
+            android:onClick="onClick"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             />
 
         <Button
@@ -35,6 +37,7 @@
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:background="@drawable/ic_more_vert_black_24dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true" />
 
@@ -85,27 +88,27 @@
 
             <Button
                 android:id="@+id/play_btn"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:text=""
                 android:background="@drawable/ic_play"
                 android:onClick="onClick"
-                android:layout_alignTop="@+id/next_btn"
                 android:layout_toEndOf="@+id/played_time"
                 android:layout_marginStart="55dp"
+                android:layout_centerVertical="true"
                 android:elevation="15dp"/>
 
             <Button
                 android:id="@+id/next_btn"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:layout_marginLeft="50dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_marginLeft="55dp"
                 android:text=""
                 android:background="@drawable/ic_next"
                 android:onClick="onClick"
+                android:layout_toStartOf="@+id/duration_time"
                 android:layout_marginEnd="55dp"
                 android:layout_centerVertical="true"
-                android:layout_toStartOf="@+id/duration_time"
                 android:elevation="15dp"/>
             <TextView
                 android:id="@+id/duration_time"

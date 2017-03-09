@@ -211,7 +211,6 @@ public class MainActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.play_btn: {
                 if(mMusicServiceBinder != null) {
-                    mMusicListView.setSelectionFromTop(mActivityMusicList.indexOf(mMusicServiceBinder.getCurrentMusic()), goodPosition);
                     if (!mMusicServiceBinder.isPlaying()) {
                         mMusicServiceBinder.play();
                     } else {
@@ -227,6 +226,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             break;
+
+            case R.id.music_title: {
+                if(mMusicServiceBinder != null) {
+                    mMusicListView.setSelectionFromTop(mActivityMusicList.indexOf(mMusicServiceBinder.getCurrentMusic()), goodPosition);
+                }
+            }
         }
     }
 
