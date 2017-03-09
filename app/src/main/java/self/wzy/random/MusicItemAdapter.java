@@ -1,6 +1,7 @@
 package self.wzy.random;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,44 +43,55 @@ public class MusicItemAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        View view;
+        MyHolder myHolder;
+
         if (convertView == null) {
-            convertView = mInflater.inflate(mResource, parent, false);
+            view = mInflater.inflate(mResource, parent, false);
+            myHolder = new MyHolder();
+            myHolder.hTitle = (TextView) view.findViewById(R.id.music_title);
+            myHolder.hSinger = (TextView) view.findViewById(R.id.music_singer);
+            myHolder.hTime = (TextView) view.findViewById(R.id.music_duration);
+            myHolder.hThumb = (ImageView) view.findViewById(R.id.music_thumb);
+            view.setTag(myHolder);
+        }else {
+            view = convertView;
+            myHolder = (MyHolder) view.getTag();
         }
 
         MusicItem item = mData.get(position);
 
-        TextView title = (TextView) convertView.findViewById(R.id.music_title);
-        title.setText(item.name);
-
-        TextView singer = (TextView) convertView.findViewById(R.id.music_singer);
-        singer.setText(item.singer);
-
-        TextView createTime = (TextView) convertView.findViewById(R.id.music_duration);
+        myHolder.hTitle.setText(item.name);
+        myHolder.hSinger.setText(item.singer);
 
         String times = Utils.convertMSecendToTime(item.duration);
         times = String.format(mContext.getString(R.string.duration), times);
-        createTime.setText(times);
+        myHolder.hTime.setText(times);
 
-        ImageView thumb = (ImageView) convertView.findViewById(R.id.music_thumb);
-        if(thumb != null) {
-            if (item.thumb != null) {
-                thumb.setImageBitmap(item.thumb);
-            } else {
-                thumb.setImageResource(R.drawable.default_cover);
-            }
+        Bitmap bmp = Utils.createThumbFromUir(mContext.getContentResolver(), item.thumbUri);
+        if (bmp != null) {
+            myHolder.hThumb.setImageBitmap(bmp);
+        } else {
+            myHolder.hThumb.setImageResource(R.drawable.default_cover);
         }
 
         if (position == selectItem) {
-            convertView.setBackgroundResource(R.color.colorAccent);
+            view.setBackgroundResource(R.color.colorAccent);
         }else {
-            convertView.setBackground(null);
+            view.setBackground(null);
         }
 
-        return convertView;
+        return view;
     }
 
     public  void setSelectItem(int selectItem) {
         this.selectItem = selectItem;
     }
 
+    static class MyHolder{
+        TextView hTitle;
+        TextView hSinger;
+        TextView hTime;
+        ImageView hThumb;
+    }
 }

@@ -56,6 +56,12 @@ public class MainActivity extends AppCompatActivity {
         bindService(i, mServiceConnection, BIND_AUTO_CREATE);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mActivityMusicList.clear();
+    }
+
     private void initViews(){
         mActivityMusicList = new ArrayList<MusicItem>();
         mMusicListView = (ListView) findViewById(R.id.music_list);

@@ -267,12 +267,8 @@ public class MusicService extends Service {
                     long duration = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
 
                     int albumId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ID));
-                    Uri albumUri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId);
-                    MusicItem data = new MusicItem(musicUri, albumUri, name, singer, duration, 0);
-                    if (uri != null) {
-                        ContentResolver res = getContentResolver();
-                        data.thumb = Utils.createThumbFromUir(res, albumUri);
-                    }
+                    Uri thumbUri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId);
+                    MusicItem data = new MusicItem(musicUri, thumbUri, name, singer, duration, 0);
                     publishProgress(data);
                 }
                 cursor.close();
