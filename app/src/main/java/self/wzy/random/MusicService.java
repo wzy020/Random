@@ -1,9 +1,12 @@
 package self.wzy.random;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -13,6 +16,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +39,16 @@ public class MusicService extends Service {
         void onPause(MusicItem item);
         void onUpdateInfos(MusicItem item);
     }
+
+    private BroadcastReceiver headsetReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getIntExtra("state", 0) == 0){
+                if(mMusicPlayer.isPlaying())
+                    pauseInner();
+            }
+        }
+    };
 
     private final int MSG_PROGRESS_UPDATE = 0;
     private Handler mHandler = new Handler() {
@@ -57,6 +72,11 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(headsetReceiver, filter);
+
         mServiceMusicList = new ArrayList<MusicItem>();
         mMusicUpdateTask = new MusicUpdateTask();
         mMusicUpdateTask.execute();
@@ -84,6 +104,8 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        unregisterReceiver(headsetReceiver);
 
         if(mMusicPlayer.isPlaying()) {
             mMusicPlayer.stop();
