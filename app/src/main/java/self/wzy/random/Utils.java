@@ -13,6 +13,8 @@ import java.util.Date;
 
 class Utils {
 
+    public static boolean isInitList = false;
+
     static public String convertMSecendToTime(long time) {
 
         SimpleDateFormat mSDF = new SimpleDateFormat("mm:ss");
@@ -29,6 +31,7 @@ class Utils {
         try {
             in = res.openInputStream(albumUri);
             BitmapFactory.Options sBitmapOptions = new BitmapFactory.Options();
+            sBitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;
             bmp = BitmapFactory.decodeStream(in, null, sBitmapOptions);
             in.close();
         } catch (FileNotFoundException e) {

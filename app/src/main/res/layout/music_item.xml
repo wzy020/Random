@@ -12,7 +12,7 @@
         android:layout_height="65dp"
         android:scaleType="fitCenter"
         android:layout_margin="2dp"
-        android:background="@color/colorPrimaryLight"
+        android:src="@drawable/default_cover"
         android:elevation="5dp"/>
 
     <RelativeLayout

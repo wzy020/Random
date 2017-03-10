@@ -2,6 +2,7 @@ package self.wzy.random;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,10 +69,13 @@ public class MusicItemAdapter extends BaseAdapter {
         times = String.format(mContext.getString(R.string.duration), times);
         myHolder.hTime.setText(times);
 
-        Bitmap bmp = Utils.createThumbFromUir(mContext.getContentResolver(), item.thumbUri);
-        if (bmp != null) {
-            myHolder.hThumb.setImageBitmap(bmp);
-        } else {
+        myHolder.hThumb.setTag(position);
+        if(!Utils.isInitList) {
+            Bitmap bmp = Utils.createThumbFromUir(mContext.getContentResolver(), item.thumbUri);
+            if (bmp != null) {
+                myHolder.hThumb.setImageBitmap(bmp);
+            }
+        }else {
             myHolder.hThumb.setImageResource(R.drawable.default_cover);
         }
 

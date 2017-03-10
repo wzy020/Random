@@ -4,13 +4,16 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private MusicService.MusicServiceIBinder mMusicServiceBinder;
     private MusicItemAdapter adapter;
     private int goodPosition = 0;
+    private int start_index, end_index;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        Utils.isInitList = false;
         mMusicServiceBinder.unregisterOnStateChangeListener(mStateChangeListenr);
         unbindService(mServiceConnection);
     }
@@ -66,6 +71,30 @@ public class MainActivity extends AppCompatActivity {
         mActivityMusicList = new ArrayList<MusicItem>();
         mMusicListView = (ListView) findViewById(R.id.music_list);
         mMusicListView.setOnItemClickListener(mOnMusicItemClickListener);
+
+        mMusicListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                Utils.isInitList = true;
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    for (; start_index < end_index; start_index++) {
+                        Bitmap bmp = Utils.createThumbFromUir(getContentResolver(), mActivityMusicList.get(start_index).thumbUri);
+                        if (bmp != null) {
+                            ((ImageView) mMusicListView.findViewWithTag(start_index)).setImageBitmap(bmp);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                start_index = firstVisibleItem;
+                end_index = firstVisibleItem + visibleItemCount;
+
+            }
+        });
+
 
         mPlayBtn = (Button) findViewById(R.id.play_btn);
         mNextBtn = (Button) findViewById(R.id.next_btn);
