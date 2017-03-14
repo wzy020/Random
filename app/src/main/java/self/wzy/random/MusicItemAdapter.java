@@ -1,8 +1,7 @@
 package self.wzy.random;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +15,14 @@ public class MusicItemAdapter extends BaseAdapter {
     private List<MusicItem> mData;
     private final LayoutInflater mInflater;
     private final int mResource;
-    private Context mContext;
+    private Activity mActivity;
     private int selectItem = -1;
 
-    public MusicItemAdapter(Context context, int resId, List<MusicItem> data)
+    public MusicItemAdapter(Activity activity, int resId, List<MusicItem> data)
     {
-        mContext = context;
+        mActivity = activity;
         mData = data;
-        mInflater = LayoutInflater.from(context);
+        mInflater = LayoutInflater.from(activity);
         mResource = resId;
     }
 
@@ -66,17 +65,26 @@ public class MusicItemAdapter extends BaseAdapter {
         myHolder.hSinger.setText(item.singer);
 
         String times = Utils.convertMSecendToTime(item.duration);
-        times = String.format(mContext.getString(R.string.duration), times);
+        times = String.format(mActivity.getString(R.string.duration), times);
         myHolder.hTime.setText(times);
 
         myHolder.hThumb.setTag(position);
-        if(!Utils.isInitList) {
-            Bitmap bmp = Utils.createThumbFromUir(mContext.getContentResolver(), item.thumbUri);
+        if(!MainActivity.isInitList) {
+            Bitmap bmp = Utils.createThumbFromUir(mActivity.getContentResolver(), item.thumbUri);
             if (bmp != null) {
                 myHolder.hThumb.setImageBitmap(bmp);
             }
         }else {
-            myHolder.hThumb.setImageResource(R.drawable.default_cover);
+            if(MainActivity.isScrolling){
+                myHolder.hThumb.setImageResource(R.drawable.default_cover);
+            }else {
+                Bitmap bmp = Utils.createThumbFromUir(mActivity.getContentResolver(), item.thumbUri);
+                if (bmp != null) {
+                    myHolder.hThumb.setImageBitmap(bmp);
+                }else {
+                    myHolder.hThumb.setImageResource(R.drawable.default_cover);
+                }
+            }
         }
 
         if (position == selectItem) {

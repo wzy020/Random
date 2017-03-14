@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private MusicItemAdapter adapter;
     private int goodPosition = 0;
     private int start_index, end_index;
+    public static boolean isInitList = false;
+    public static boolean isScrolling = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Utils.isInitList = false;
+        isInitList = false;
         mMusicServiceBinder.unregisterOnStateChangeListener(mStateChangeListenr);
         unbindService(mServiceConnection);
     }
@@ -75,14 +77,19 @@ public class MainActivity extends AppCompatActivity {
         mMusicListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                Utils.isInitList = true;
-                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    for (; start_index < end_index; start_index++) {
-                        Bitmap bmp = Utils.createThumbFromUir(getContentResolver(), mActivityMusicList.get(start_index).thumbUri);
-                        if (bmp != null) {
-                            ((ImageView) mMusicListView.findViewWithTag(start_index)).setImageBitmap(bmp);
+                isInitList = true;
+                switch (scrollState){
+                    case AbsListView.OnScrollListener.SCROLL_STATE_IDLE: // stop scroll
+                        isScrolling = false;
+                        for (; start_index < end_index; start_index++) {
+                            Bitmap bmp = Utils.createThumbFromUir(getContentResolver(), mActivityMusicList.get(start_index).thumbUri);
+                            if (bmp != null) {
+                                ((ImageView) mMusicListView.findViewWithTag(start_index)).setImageBitmap(bmp);
+                            }
                         }
-                    }
+                        break;
+                    case AbsListView.OnScrollListener.SCROLL_STATE_FLING: // start scroll
+                        isScrolling = true;
                 }
             }
 
@@ -210,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
             mActivityMusicList.clear();
             mActivityMusicList.addAll(mMusicServiceBinder.getList());
 
-            adapter = new MusicItemAdapter(getApplicationContext(), R.layout.music_item, mActivityMusicList);
+            adapter = new MusicItemAdapter(MainActivity.this, R.layout.music_item, mActivityMusicList);
             mMusicListView.setAdapter(adapter);
 
             MusicItem currentItem = mMusicServiceBinder.getCurrentMusic();

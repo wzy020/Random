@@ -13,8 +13,6 @@ import java.util.Date;
 
 class Utils {
 
-    public static boolean isInitList = false;
-
     static public String convertMSecendToTime(long time) {
 
         SimpleDateFormat mSDF = new SimpleDateFormat("mm:ss");
