@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mMusicListView;
     private Button mPlayBtn;
     private Button mNextBtn;
-    private TextView mMusicTitle;
+    private AlwaysFocusedTextView mMusicTitle;
     private TextView mPlayedTime;
     private TextView mDurationTime;
     private SeekBar mMusicSeekBar;
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         mPlayBtn = (Button) findViewById(R.id.play_btn);
         mNextBtn = (Button) findViewById(R.id.next_btn);
 
-        mMusicTitle = (TextView) findViewById(R.id.music_title);
+        mMusicTitle = (AlwaysFocusedTextView) findViewById(R.id.music_title);
         mDurationTime = (TextView) findViewById(R.id.duration_time);
         mPlayedTime = (TextView) findViewById(R.id.played_time);
         mMusicSeekBar = (SeekBar) findViewById(R.id.seek_music);
@@ -177,7 +177,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPlayProgressChange(MusicItem item) {
-            updatePlayingInfo(item);
+            String times = Utils.convertMSecendToTime(item.playedTime);
+            mPlayedTime.setText(times);
+
+            mMusicSeekBar.setMax((int) item.duration);
+            mMusicSeekBar.setProgress((int) item.playedTime);
         }
 
         @Override
